@@ -67,3 +67,45 @@ python manage.py createsuperuser
 
 # Run the server
 python manage.py runserver
+
+ Access the Application:
+Page	URL
+Home	http://127.0.0.1:8000/
+Report a Fault	http://127.0.0.1:8000/report/
+My Reports	http://127.0.0.1:8000/my-reports/
+Admin Dashboard	http://127.0.0.1:8000/admin-dashboard/
+Personas	http://127.0.0.1:8000/personas/
+Statistics	http://127.0.0.1:8000/stats/
+
+N.B!!  Screenshots
+[Add your screenshots here after taking them]
+
+ Academic Context:
+Developed for NHCI63110 - Human-Computer Interaction at Sol Plaatje University
+
+Course Examiner: Mrs. K.E. Mamabolo
+
+Moderator: Dr. Silas Verkijika
+
+Submitted: 02 April 2026
+
+ Author:
+Setati Phuti Molepeledi Phillipine
+
+GitHub: @SetatiPhillipine
+
+Email: setatiphillipine@icloud.com
+
+License
+Academic Project - Sol Plaatje University
+
+Acknowledgments
+Capricorn District Municipality for source information
+
+Sol Plaatje University ICT Department
+
+Community members who provided insights
+
+Re šoma le setšhaba — Working with the community!!
+
+
