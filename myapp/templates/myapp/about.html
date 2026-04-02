@@ -1,0 +1,174 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About — AquaReport CDM</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root { --bg: #0a0e17; --surface: #111827; --border: #1e2d40; --accent: #00b4d8; --accent2: #f97316; --text: #e2e8f0; --muted: #64748b; --danger: #ef4444; --green: #22c55e; }
+    body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+    nav { display: flex; justify-content: space-between; align-items: center; padding: 1.2rem 3rem; border-bottom: 1px solid var(--border); background: rgba(10,14,23,0.95); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 100; }
+    .nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; letter-spacing: 2px; color: var(--accent); text-decoration: none; display: flex; align-items: center; gap: 10px; }
+    .nav-logo img { height: 55px; }
+    .nav-links { display: flex; gap: 2rem; align-items: center; flex-wrap: wrap; }
+    .nav-links a { color: var(--muted); text-decoration: none; font-size: 0.9rem; font-weight: 500; transition: color 0.2s; }
+    .nav-links a:hover { color: var(--text); }
+    .nav-cta { background: var(--accent); color: #000; padding: 0.6rem 1.4rem; border-radius: 4px; font-weight: 600; font-size: 0.85rem; text-decoration: none; transition: opacity 0.2s; }
+    .nav-cta:hover { opacity: 0.85; }
+
+    .page-wrap { max-width: 1200px; margin: 4rem auto; padding: 0 2rem; }
+    .hero-images { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 3rem; border-radius: 16px; overflow: hidden; }
+    .hero-images img { width: 100%; height: 300px; object-fit: cover; transition: transform 0.3s; }
+    .hero-images img:hover { transform: scale(1.02); }
+    .page-tag { display: inline-block; background: rgba(0,180,216,0.1); border: 1px solid rgba(0,180,216,0.3); color: var(--accent); font-size: 0.75rem; letter-spacing: 2px; text-transform: uppercase; padding: 0.4rem 1rem; border-radius: 2px; margin-bottom: 1.5rem; }
+    h1 { font-family: 'Bebas Neue', sans-serif; font-size: 3.5rem; letter-spacing: 2px; margin-bottom: 1rem; line-height: 1; }
+    .lead { color: var(--muted); font-size: 1.1rem; line-height: 1.8; margin-bottom: 3rem; max-width: 800px; }
+    .section-title { font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; letter-spacing: 2px; color: var(--accent); margin-bottom: 1.5rem; margin-top: 2rem; border-left: 4px solid var(--accent); padding-left: 1rem; }
+
+    .problem-grid, .solution-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+    .problem-card, .solution-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.8rem; transition: transform 0.2s; }
+    .problem-card:hover, .solution-card:hover { transform: translateY(-4px); border-color: var(--accent); }
+    .problem-card .icon, .solution-card .icon { font-size: 2rem; margin-bottom: 1rem; }
+    .problem-card h3, .solution-card h3 { font-family: 'Bebas Neue', sans-serif; font-size: 1.3rem; margin-bottom: 0.8rem; color: var(--accent); }
+    .problem-card p, .solution-card p { color: var(--muted); line-height: 1.7; font-size: 0.92rem; }
+    .stat-highlight { font-size: 2rem; font-weight: bold; color: var(--accent2); display: block; margin: 0.5rem 0; }
+
+    .crisis-stats { background: linear-gradient(135deg, rgba(239,68,68,0.1), rgba(0,0,0,0.2)); border: 1px solid var(--border); border-radius: 12px; padding: 2rem; margin: 2rem 0; }
+    .crisis-stats h3 { font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; color: var(--danger); margin-bottom: 1rem; }
+    .stats-row { display: flex; justify-content: space-between; align-items: center; padding: 1rem 0; border-bottom: 1px solid var(--border); flex-wrap: wrap; gap: 1rem; }
+    .stats-row:last-child { border-bottom: none; }
+    .stats-label { color: var(--muted); font-size: 0.95rem; }
+    .stats-value { font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; color: #f87171; }
+
+    .academic-note { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 2rem; margin-top: 3rem; text-align: center; }
+    .academic-note p { color: var(--muted); font-size: 0.85rem; line-height: 1.6; }
+
+    footer { border-top: 1px solid var(--border); padding: 2rem 3rem; text-align: center; color: var(--muted); font-size: 0.85rem; margin-top: 4rem; }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="/" class="nav-logo">
+      <img src="{% static 'myapp/logo.webp' %}" alt="CDM Logo">
+      AQUAREPORT CDM
+    </a>
+    <div class="nav-links">
+      <a href="/">Home</a>
+      <a href="/about/">About</a>
+      <a href="/personas/">Personas</a>
+      <a href="/stats/">Statistics</a>
+      <a href="/reports/">Reports</a>
+      {% if user.is_authenticated %}
+        <a href="/my-reports/">My Reports</a>
+        <a href="/logout/" style="color: #ef4444;">Logout</a>
+      {% else %}
+        <a href="/login/">Login</a>
+        <a href="/signup/">Sign Up</a>
+      {% endif %}
+    </div>
+    <a href="/report/" class="nav-cta">Report a Fault</a>
+  </nav>
+
+  <div class="page-wrap">
+    <!-- Two Images at the Top -->
+    <div class="hero-images">
+      <img src="{% static 'myapp/cdm_about1.jpeg' %}" alt="Capricorn District Municipality Community" onerror="this.src='https://via.placeholder.com/600x400?text=CDM+Community'">
+      <img src="{% static 'myapp/cdm_about2.jpeg' %}" alt="CDM Water Infrastructure" onerror="this.src='https://via.placeholder.com/600x400?text=CDM+Water+Infrastructure'">
+    </div>
+
+    <div class="page-tag">About Capricorn District Municipality</div>
+    <h1>ABOUT CAPRICORN DISTRICT MUNICIPALITY</h1>
+    <p class="lead">Capricorn District Municipality (CDM) is a Category C municipality located in the heart of Limpopo Province, South Africa. It serves as the administrative hub for three local municipalities: Blouberg, Molemole, and Lepelle-Nkumpi.</p>
+
+    <!-- THE PROBLEM SECTION -->
+    <div class="section-title">🚰 THE WATER CRISIS IN CDM</div>
+    <div class="problem-grid">
+      <div class="problem-card">
+        <div class="icon">💧</div>
+        <h3>Failed Water Projects</h3>
+        <p><span class="stat-highlight">R213 MILLION</span> spent on bulk water projects in Blouberg with <strong>ZERO water delivered</strong> after two years. Communities left without promised infrastructure.</p>
+      </div>
+      <div class="problem-card">
+        <div class="icon">🔧</div>
+        <h3>Contractor Negligence</h3>
+        <p><span class="stat-highlight">95%</span> of infrastructure breakdowns are <strong>ignored by maintenance contractors</strong>, leaving communities with unresolved water failures for months.</p>
+      </div>
+      <div class="problem-card">
+        <div class="icon">💰</div>
+        <h3>Budget Mismanagement</h3>
+        <p><span class="stat-highlight">R24 MILLION</span> operations and maintenance budget <strong>exhausted within the first 3 months</strong> of the financial year, leaving no funds for repairs.</p>
+      </div>
+      <div class="problem-card">
+        <div class="icon">🏘️</div>
+        <h3>Silvermine Village Crisis</h3>
+        <p><span class="stat-highlight">24+ MONTHS</span> since the residents of Silvermine village last had access to <strong>piped clean water</strong>. Residents are forced to share water sources with animals.</p>
+      </div>
+    </div>
+
+    <!-- CRISIS STATISTICS -->
+    <div class="crisis-stats">
+      <h3>⚠️ CDM WATER CRISIS AT A GLANCE</h3>
+      <div class="stats-row">
+        <span class="stats-label">Total population affected by water failures</span>
+        <span class="stats-value">1.37 MILLION</span>
+      </div>
+      <div class="stats-row">
+        <span class="stats-label">Blouberg — Failed bulk water projects (2023)</span>
+        <span class="stats-value">R213 MILLION</span>
+      </div>
+      <div class="stats-row">
+        <span class="stats-label">Infrastructure breakdowns ignored by contractors</span>
+        <span class="stats-value">95%</span>
+      </div>
+      <div class="stats-row">
+        <span class="stats-label">Operations budget exhausted within</span>
+        <span class="stats-value">3 MONTHS</span>
+      </div>
+      <div class="stats-row">
+        <span class="stats-label">Silvermine village — without piped water</span>
+        <span class="stats-value">24+ MONTHS</span>
+      </div>
+    </div>
+
+    <!-- THE SOLUTION -->
+    <div class="section-title">📱 AQUAREPORT CDM — THE SOLUTION</div>
+    <div class="solution-grid">
+      <div class="solution-card">
+        <div class="icon">📝</div>
+        <h3>Easy Fault Reporting</h3>
+        <p>Residents can report water faults instantly through a simple, accessible web form — no app installation required.</p>
+      </div>
+      <div class="solution-card">
+        <div class="icon">📊</div>
+        <h3>Real-Time Tracking</h3>
+        <p>Every report is tracked with status updates: Pending → In Progress → Resolved. Full transparency and accountability.</p>
+      </div>
+      <div class="solution-card">
+        <div class="icon">👥</div>
+        <h3>Community Voices</h3>
+        <p>Each report creates a community persona, putting real faces to the water crisis and amplifying resident voices.</p>
+      </div>
+      <div class="solution-card">
+        <div class="icon">📱🌍</div>
+        <h3>Accessible to All</h3>
+        <p>Works on any device with a browser — Android, iOS, desktop — unlike existing apps that are iOS-only.</p>
+      </div>
+    </div>
+
+    <!-- ACADEMIC CONTEXT (Bottom Section) -->
+    <div class="academic-note">
+      <p><strong>📚 Academic Context:</strong> AquaReport CDM was developed as part of <strong>NHCI63110 — Human-Computer Interaction</strong> at <strong>Sol Plaatje University</strong>, Department of Information and Communication Technology.</p>
+      <p style="margin-top: 0.8rem;">Course Examiner: Mrs. K.E. Mamabolo | Moderator: Dr. Silas Verkijika | Submitted: April 2026</p>
+      <p style="margin-top: 0.5rem;">Re šoma le setšhaba — Working with the community</p>
+    </div>
+  </div>
+
+  <footer>
+    <p>AquaReport CDM — Capricorn District Municipality Water Fault Reporting System</p>
+    <p style="margin-top: 0.5rem;">📞 Emergency Water Line: 0800 123 456 | 🌐 www.cdm.org.za | Re šoma le setšhaba</p>
+  </footer>
+</body>
+</html>

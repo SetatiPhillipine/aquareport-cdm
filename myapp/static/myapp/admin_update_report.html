@@ -1,0 +1,102 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Update Report | Admin | AquaReport CDM</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root { --bg: #0a0e17; --surface: #111827; --border: #1e2d40; --accent: #00b4d8; --accent2: #f97316; --text: #e2e8f0; --muted: #64748b; --danger: #ef4444; --green: #22c55e; }
+    body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+    
+    nav { display: flex; justify-content: space-between; align-items: center; padding: 1.2rem 3rem; border-bottom: 1px solid var(--border); background: rgba(10,14,23,0.95); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 100; }
+    .nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; letter-spacing: 2px; color: var(--accent); text-decoration: none; display: flex; align-items: center; gap: 10px; }
+    .nav-logo img { height: 55px; }
+    .nav-links { display: flex; gap: 2rem; align-items: center; flex-wrap: wrap; }
+    .nav-links a { color: var(--muted); text-decoration: none; font-size: 0.9rem; font-weight: 500; transition: color 0.2s; }
+    .nav-links a:hover { color: var(--text); }
+    .nav-cta { background: var(--accent); color: #000; padding: 0.6rem 1.4rem; border-radius: 4px; font-weight: 600; font-size: 0.85rem; text-decoration: none; }
+
+    .container { max-width: 800px; margin: 3rem auto; padding: 0 2rem; }
+    .form-card { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 2rem; }
+    h1 { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; letter-spacing: 2px; margin-bottom: 0.5rem; color: var(--accent); }
+    .subtitle { color: var(--muted); margin-bottom: 2rem; }
+    .info-box { background: rgba(0,0,0,0.2); border-radius: 12px; padding: 1.2rem; margin-bottom: 1.5rem; }
+    .info-box p { margin: 0.5rem 0; color: var(--muted); }
+    .info-box strong { color: var(--text); }
+    .form-group { margin-bottom: 1.2rem; }
+    label { display: block; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 0.5rem; }
+    select, textarea { width: 100%; background: #1a1c22; border: 1px solid var(--border); border-radius: 10px; padding: 0.8rem; color: white; font-family: inherit; font-size: 0.9rem; }
+    select:focus, textarea:focus { outline: none; border-color: var(--accent); }
+    textarea { min-height: 100px; resize: vertical; }
+    .btn-save { background: var(--accent); color: #000; border: none; padding: 0.8rem 1.5rem; border-radius: 8px; font-size: 0.9rem; font-weight: 600; cursor: pointer; margin-right: 1rem; }
+    .btn-cancel { background: var(--muted); color: white; text-decoration: none; padding: 0.8rem 1.5rem; border-radius: 8px; display: inline-block; }
+    footer { border-top: 1px solid var(--border); padding: 2rem 3rem; text-align: center; color: var(--muted); font-size: 0.85rem; margin-top: 4rem; }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="/" class="nav-logo">
+      <img src="{% static 'myapp/logo.webp' %}" alt="CDM Logo">
+      AQUAREPORT CDM
+    </a>
+    <div class="nav-links">
+      <a href="/">Home</a>
+      <a href="/about/">About</a>
+      <a href="/personas/">Personas</a>
+      <a href="/stats/">Statistics</a>
+      <a href="/reports/">Reports</a>
+      {% if user.is_authenticated %}
+        <a href="/my-reports/">My Reports</a>
+        <a href="/logout/" style="color: #ef4444;">Logout</a>
+      {% else %}
+        <a href="/login/">Login</a>
+        <a href="/signup/">Sign Up</a>
+      {% endif %}
+    </div>
+    <a href="/report/" class="nav-cta">Report a Fault</a>
+  </nav>
+
+  <div class="container">
+    <div class="form-card">
+      <h1>Update Report #{{ report.id }}</h1>
+      <p class="subtitle">Review and update the status of this water fault report</p>
+      
+      <div class="info-box">
+        <p><strong>👤 Reporter:</strong> {{ report.name }} ({{ report.get_gender_display }})</p>
+        <p><strong>📞 Phone:</strong> {{ report.phone|default:"Not provided" }}</p>
+        <p><strong>📍 Location:</strong> {{ report.location }}</p>
+        <p><strong>💧 Fault Type:</strong> {{ report.fault_type|default:"Not specified" }}</p>
+        <p><strong>📝 Description:</strong> {{ report.description }}</p>
+        <p><strong>📅 Submitted:</strong> {{ report.submitted_at|date:"d M Y, H:i" }}</p>
+      </div>
+
+      <form method="POST">
+        {% csrf_token %}
+        <div class="form-group">
+          <label>Change Status</label>
+          <select name="status">
+            <option value="pending" {% if report.status == 'pending' %}selected{% endif %}>⏳ Pending</option>
+            <option value="approved" {% if report.status == 'approved' %}selected{% endif %}>🔄 In Progress</option>
+            <option value="resolved" {% if report.status == 'resolved' %}selected{% endif %}>✅ Resolved</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Admin Feedback (visible to user)</label>
+          <textarea name="admin_feedback" placeholder="e.g., We have received your report and dispatched a team...">{% if report.admin_feedback %}{{ report.admin_feedback }}{% endif %}</textarea>
+        </div>
+
+        <button type="submit" class="btn-save">Save Changes</button>
+        <a href="{% url 'admin_dashboard' %}" class="btn-cancel">Cancel</a>
+      </form>
+    </div>
+  </div>
+
+  <footer>
+    <p>AquaReport CDM — Capricorn District Municipality Water Fault Reporting System</p>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,94 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Delete Report | AquaReport CDM</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root { --bg: #0a0e17; --surface: #111827; --border: #1e2d40; --accent: #00b4d8; --accent2: #f97316; --text: #e2e8f0; --muted: #64748b; --danger: #ef4444; --green: #22c55e; }
+    body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+    
+    nav { display: flex; justify-content: space-between; align-items: center; padding: 1.2rem 3rem; border-bottom: 1px solid var(--border); background: rgba(10,14,23,0.95); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 100; }
+    .nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; letter-spacing: 2px; color: var(--accent); text-decoration: none; display: flex; align-items: center; gap: 10px; }
+    .nav-logo img { height: 55px; }
+    .nav-links { display: flex; gap: 2rem; align-items: center; flex-wrap: wrap; }
+    .nav-links a { color: var(--muted); text-decoration: none; font-size: 0.9rem; font-weight: 500; transition: color 0.2s; }
+    .nav-links a:hover { color: var(--text); }
+    .nav-cta { background: var(--accent); color: #000; padding: 0.6rem 1.4rem; border-radius: 4px; font-weight: 600; font-size: 0.85rem; text-decoration: none; transition: opacity 0.2s; }
+    .nav-cta:hover { opacity: 0.85; }
+
+    .container { max-width: 600px; margin: 4rem auto; padding: 0 2rem; }
+    .delete-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 2rem; text-align: center; }
+    .delete-icon { font-size: 4rem; margin-bottom: 1rem; }
+    h2 { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; letter-spacing: 2px; margin-bottom: 0.5rem; color: var(--danger); }
+    .warning-text { color: var(--muted); margin-bottom: 1.5rem; }
+    .report-info { background: rgba(0,0,0,0.2); border-radius: 10px; padding: 1rem; margin: 1.5rem 0; }
+    .report-info p { margin: 0.3rem 0; color: var(--muted); }
+    .report-info strong { color: var(--text); }
+    .btn-danger { background: var(--danger); color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 8px; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: opacity 0.2s; }
+    .btn-danger:hover { opacity: 0.8; }
+    .btn-cancel { background: var(--muted); color: white; text-decoration: none; padding: 0.8rem 1.5rem; border-radius: 8px; font-size: 0.9rem; font-weight: 600; display: inline-block; margin-left: 1rem; transition: opacity 0.2s; }
+    .btn-cancel:hover { opacity: 0.8; }
+
+    footer { border-top: 1px solid var(--border); padding: 2rem 3rem; text-align: center; color: var(--muted); font-size: 0.85rem; margin-top: 4rem; }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="/" class="nav-logo">
+      <img src="{% static 'myapp/logo.webp' %}" alt="CDM Logo">
+      AQUAREPORT CDM
+    </a>
+    <div class="nav-links">
+      <a href="/">Home</a>
+      <a href="/about/">About</a>
+      <a href="/personas/">Personas</a>
+      <a href="/stats/">Statistics</a>
+      <a href="/reports/">Reports</a>
+      {% if user.is_authenticated %}
+        <a href="/my-reports/">My Reports</a>
+        <a href="/logout/" style="color: #ef4444;">Logout</a>
+      {% else %}
+        <a href="/login/">Login</a>
+        <a href="/signup/">Sign Up</a>
+      {% endif %}
+    </div>
+    <a href="/report/" class="nav-cta">Report a Fault</a>
+  </nav>
+
+  <div class="container">
+    <div class="delete-card">
+      <div class="delete-icon">⚠️</div>
+      <h2>Delete Report</h2>
+      <p class="warning-text">Are you sure you want to permanently delete this report?</p>
+      
+      <div class="report-info">
+        <p><strong>Reporter:</strong> {{ report.name }}</p>
+        <p><strong>Location:</strong> {{ report.location }}</p>
+        <p><strong>Fault Type:</strong> {{ report.fault_type|default:"Not specified" }}</p>
+        <p><strong>Status:</strong> 
+          {% if report.status == 'pending' %}⏳ Pending
+          {% elif report.status == 'approved' %}🔄 In Progress
+          {% elif report.status == 'resolved' %}✅ Resolved
+          {% endif %}
+        </p>
+        <p><strong>Submitted:</strong> {{ report.submitted_at|date:"d M Y, H:i" }}</p>
+      </div>
+      
+      <form method="POST">
+        {% csrf_token %}
+        <button type="submit" class="btn-danger">Yes, Delete Report</button>
+        <a href="{% url 'admin_dashboard' %}" class="btn-cancel">Cancel</a>
+      </form>
+    </div>
+  </div>
+
+  <footer>
+    <p>AquaReport CDM — Capricorn District Municipality Water Fault Reporting System</p>
+    <p style="margin-top: 0.5rem;">📞 Emergency Water Line: 0800 123 456 | 🌐 www.cdm.org.za | Re šoma le setšhaba</p>
+  </footer>
+</body>
+</html>

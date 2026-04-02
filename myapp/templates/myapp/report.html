@@ -1,0 +1,494 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Report a Fault | AquaReport CDM</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0a0a0f;
+      --surface: #111115;
+      --card-bg: #14161a;
+      --border: #1e2a3a;
+      --accent: #00b4d8;
+      --accent-dark: #0096c7;
+      --accent2: #f97316;
+      --text: #edf2f7;
+      --text-secondary: #94a3b8;
+      --muted: #5a6e85;
+      --danger: #ef4444;
+      --green: #22c55e;
+      --input-bg: #1a1c22;
+    }
+    body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; min-height: 100vh; }
+
+    /* Navigation */
+    nav { display: flex; justify-content: space-between; align-items: center; padding: 1rem 3rem; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: rgba(10,10,15,0.95); backdrop-filter: blur(12px); z-index: 100; }
+    .nav-logo { font-size: 1.3rem; font-weight: 700; letter-spacing: 1px; color: var(--accent); text-decoration: none; display: flex; align-items: center; gap: 12px; }
+    .nav-logo img { height: 48px; }
+    .nav-links { display: flex; gap: 2rem; align-items: center; flex-wrap: wrap; }
+    .nav-links a { color: var(--text-secondary); text-decoration: none; font-size: 0.9rem; font-weight: 500; transition: color 0.2s; }
+    .nav-links a:hover { color: var(--text); }
+    .nav-cta { background: var(--accent); color: #000; padding: 0.5rem 1.2rem; border-radius: 6px; font-weight: 600; font-size: 0.85rem; text-decoration: none; transition: background 0.2s; }
+
+    /* Main Container */
+    .report-container {
+      max-width: 1000px;
+      margin: 3rem auto;
+      padding: 0 1.5rem;
+    }
+
+    /* Header */
+    .page-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .page-tag {
+      display: inline-block;
+      background: rgba(0,180,216,0.12);
+      border: 1px solid rgba(0,180,216,0.3);
+      color: var(--accent);
+      font-size: 0.7rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 0.3rem 1rem;
+      border-radius: 30px;
+      margin-bottom: 1rem;
+    }
+    .page-header h1 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #fff, var(--accent));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      margin-bottom: 0.5rem;
+    }
+    .page-header p {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+
+    /* Form Card */
+    .form-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: 0 20px 35px -15px rgba(0,0,0,0.4);
+    }
+
+    /* Form Sections */
+    .form-section {
+      padding: 1.8rem 2rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .form-section:last-child {
+      border-bottom: none;
+    }
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      margin-bottom: 1.5rem;
+    }
+    .section-icon {
+      width: 40px;
+      height: 40px;
+      background: rgba(0,180,216,0.1);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+    }
+    .section-title h2 {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .section-title p {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-top: 0.2rem;
+    }
+
+    /* Form Grid */
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.2rem;
+    }
+    .form-group-full {
+      grid-column: span 2;
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .form-group label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--muted);
+    }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 0.9rem 1rem;
+      color: var(--text);
+      font-size: 0.9rem;
+      font-family: 'Inter', sans-serif;
+      transition: all 0.2s;
+    }
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(0,180,216,0.1);
+    }
+    .form-group input::placeholder,
+    .form-group textarea::placeholder {
+      color: #3a4a5a;
+      font-size: 0.85rem;
+      font-style: italic;
+    }
+
+    /* Mock Data Hint */
+    .mock-hint {
+      font-size: 0.7rem;
+      color: #4a5b6e;
+      margin-top: 0.25rem;
+      font-style: italic;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+    .mock-hint::before {
+      content: "💡";
+      font-size: 0.65rem;
+    }
+
+    /* Map Container */
+    .map-container {
+      margin-top: 1rem;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    #locationMap {
+      height: 280px;
+      width: 100%;
+      background: #1a1c22;
+    }
+    .map-instruction {
+      font-size: 0.7rem;
+      color: var(--muted);
+      margin-top: 0.5rem;
+      text-align: center;
+    }
+
+    /* Radio Group */
+    .radio-group {
+      display: flex;
+      gap: 1.5rem;
+      padding: 0.5rem 0;
+    }
+    .radio-option {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+    }
+    .radio-option input {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+    .radio-option label {
+      cursor: pointer;
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      text-transform: none;
+      letter-spacing: normal;
+    }
+
+    /* Submit Button */
+    .submit-section {
+      padding: 2rem;
+      background: linear-gradient(135deg, rgba(0,180,216,0.05), transparent);
+      text-align: center;
+    }
+    .submit-btn {
+      background: var(--accent);
+      color: #000;
+      border: none;
+      padding: 1rem 2.5rem;
+      border-radius: 40px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+    .submit-btn:hover {
+      background: var(--accent-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px -10px rgba(0,180,216,0.4);
+    }
+
+    /* Back Link */
+    .back-link {
+      text-align: center;
+      margin-top: 1.5rem;
+    }
+    .back-link a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.85rem;
+      transition: color 0.2s;
+    }
+    .back-link a:hover {
+      color: var(--accent);
+    }
+
+    @media (max-width: 700px) {
+      .form-grid { grid-template-columns: 1fr; }
+      .form-group-full { grid-column: span 1; }
+      .form-section { padding: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="/" class="nav-logo">
+      <img src="{% static 'myapp/logo.webp' %}" alt="CDM Logo">
+      AQUAREPORT CDM
+    </a>
+    <div class="nav-links">
+      <a href="/">Home</a>
+      <a href="/about/">About</a>
+      <a href="/personas/">Personas</a>
+      <a href="/stats/">Statistics</a>
+      <a href="/reports/">Reports</a>
+      {% if user.is_authenticated %}
+        <a href="/my-reports/">My Reports</a>
+        <a href="/logout/" style="color: #ef4444;">Logout</a>
+      {% else %}
+        <a href="/login/">Login</a>
+        <a href="/signup/">Sign Up</a>
+      {% endif %}
+    </div>
+    <a href="/report/" class="nav-cta">Report a Fault</a>
+  </nav>
+
+  <div class="report-container">
+    <div class="page-header">
+      <div class="page-tag">📝 Submit a Water Fault Report</div>
+      <h1>Report a Water Fault</h1>
+      <p>Help us identify and resolve water infrastructure issues in your community</p>
+    </div>
+
+    <div class="form-card">
+      <form method="POST">
+        {% csrf_token %}
+
+        <!-- SECTION 1: Personal Information -->
+        <div class="form-section">
+          <div class="section-title">
+            <div class="section-icon">👤</div>
+            <div>
+              <h2>Your Information</h2>
+              <p>We need your details to follow up on this report</p>
+            </div>
+          </div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Full Name</label>
+              <input type="text" name="name" placeholder="e.g., Mpho Malatji" required>
+              <div class="mock-hint">e.g., Mpho Malatji, Thabo Nkosi, Lerato Molefe</div>
+            </div>
+            <div class="form-group">
+              <label>Phone Number</label>
+              <input type="text" name="phone" placeholder="e.g., 071 234 5678">
+              <div class="mock-hint">Optional — we'll use this to update you</div>
+            </div>
+            <div class="form-group">
+              <label>Gender</label>
+              <div class="radio-group">
+                <label class="radio-option">
+                  <input type="radio" name="gender" value="male" checked> <span>👨 Male</span>
+                </label>
+                <label class="radio-option">
+                  <input type="radio" name="gender" value="female"> <span>👩 Female</span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION 2: Fault Location & Map -->
+        <div class="form-section">
+          <div class="section-title">
+            <div class="section-icon">📍</div>
+            <div>
+              <h2>Fault Location</h2>
+              <p>Where is the water fault occurring?</p>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Village / Location</label>
+            <input type="text" name="location" id="locationInput" placeholder="e.g., Ga-Seakamela, Silvermine, Ga-Mphahlele" required>
+            <div class="mock-hint">e.g., Ga-Seakamela (Blouberg), Silvermine Village, Ga-Mphahlele (Lepelle-Nkumpi)</div>
+          </div>
+
+          <!-- Interactive Map -->
+          <div class="map-container">
+            <div id="locationMap"></div>
+          </div>
+          <div class="map-instruction">
+            🗺️ Click on the map to select your location — the village name will update automatically
+          </div>
+        </div>
+
+        <!-- SECTION 3: Fault Details -->
+        <div class="form-section">
+          <div class="section-title">
+            <div class="section-icon">💧</div>
+            <div>
+              <h2>Fault Details</h2>
+              <p>Tell us what's happening</p>
+            </div>
+          </div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Type of Fault</label>
+              <select name="fault_type">
+                <option value="No water supply">💧 No water supply</option>
+                <option value="Pipe burst">💦 Pipe burst</option>
+                <option value="Water leak">🚰 Water leak</option>
+                <option value="Contaminated water">⚠️ Contaminated water</option>
+                <option value="Low water pressure">📉 Low water pressure</option>
+                <option value="Other">❓ Other</option>
+              </select>
+            </div>
+            <div class="form-group form-group-full">
+              <label>Description</label>
+              <textarea name="description" rows="4" placeholder="Describe what's happening, how long it's been going on, and how it's affecting your community..." required></textarea>
+              <div class="mock-hint">e.g., Metsi a fedile dibeke tše tharo — ga re na metsi a go nwa. Batho ba soma ka dikoloi go ya go lata metsi. (No water for 3 weeks — we have no drinking water. People use cars to fetch water.)</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SUBMIT BUTTON -->
+        <div class="submit-section">
+          <button type="submit" class="submit-btn">
+            📤 Submit Fault Report → 
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <div class="back-link">
+      <a href="/">← Back to Home</a>
+    </div>
+  </div>
+
+  <!-- Leaflet Map Library - Using working CDN -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    // Capricorn District Municipality Center Coordinates
+    const cdmCenter = [-23.8962, 29.4558];
+    
+    // Predefined village locations in CDM area (for map clicks)
+    const villageLocations = {
+      "Ga-Seakamela": [-23.1562, 29.2158],
+      "Silvermine": [-23.0895, 29.1789],
+      "Ga-Mphahlele": [-24.1856, 29.6892],
+      "Mogwadi": [-23.5345, 29.0123],
+      "Morebeng": [-23.6123, 29.2156],
+      "Polokwane": [-23.8962, 29.4558],
+      "Seshego": [-23.8234, 29.3892],
+      "Mankweng": [-23.8856, 29.6989],
+      "Tzaneen": [-23.8312, 30.1634],
+      "Senwabarwana": [-23.2895, 29.1123],
+      "Ga-Molepo": [-23.7856, 29.5123],
+      "Ga-Dikgale": [-23.6789, 29.3892]
+    };
+
+    // Initialize map
+    const map = L.map('locationMap').setView(cdmCenter, 9);
+    
+    // Add tile layer (dark theme map)
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> & CartoDB',
+      subdomains: 'abcd',
+      minZoom: 8,
+      maxZoom: 14
+    }).addTo(map);
+
+    // Add a marker variable
+    let currentMarker = null;
+    
+    // Function to update location input based on map click
+    function updateLocationFromCoords(lat, lng) {
+      // Find closest village based on coordinates
+      let closestVillage = null;
+      let closestDistance = Infinity;
+      
+      for (const [village, coords] of Object.entries(villageLocations)) {
+        const distance = Math.hypot(lat - coords[0], lng - coords[1]);
+        if (distance < closestDistance) {
+          closestDistance = distance;
+          closestVillage = village;
+        }
+      }
+      
+      // If within reasonable distance, use that village name
+      if (closestDistance < 0.3) {
+        document.getElementById('locationInput').value = closestVillage;
+      } else {
+        // Generate a descriptive location
+        const latRound = lat.toFixed(3);
+        const lngRound = lng.toFixed(3);
+        document.getElementById('locationInput').value = `Area near ${latRound}, ${lngRound}`;
+      }
+      
+      // Update marker
+      if (currentMarker) {
+        map.removeLayer(currentMarker);
+      }
+      currentMarker = L.marker([lat, lng]).addTo(map)
+        .bindPopup(`📍 Location selected<br>Village: ${document.getElementById('locationInput').value}`)
+        .openPopup();
+    }
+    
+    // Add click handler to map
+    map.on('click', function(e) {
+      updateLocationFromCoords(e.latlng.lat, e.latlng.lng);
+    });
+    
+    // Add initial marker at CDM center
+    currentMarker = L.marker(cdmCenter).addTo(map)
+      .bindPopup('📍 Capricorn District Municipality<br>Click on the map to select your exact location')
+      .openPopup();
+    
+    // Add a scale bar
+    L.control.scale({ metric: true, imperial: false }).addTo(map);
+  </script>
+</body>
+</html>

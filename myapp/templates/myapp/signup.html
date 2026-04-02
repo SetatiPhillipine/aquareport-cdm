@@ -1,0 +1,40 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign Up | AquaReport CDM</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #0a0a0f; color: #edf2f7; font-family: 'Inter', sans-serif; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+    .signup-container { background: #111115; border: 1px solid #1e2a3a; border-radius: 24px; padding: 2rem; width: 100%; max-width: 450px; margin: 2rem; }
+    h1 { font-size: 1.8rem; margin-bottom: 0.5rem; color: #00b4d8; }
+    .subtitle { color: #5a6e85; margin-bottom: 1.5rem; font-size: 0.85rem; }
+    input { width: 100%; padding: 0.8rem; margin: 0.5rem 0; background: #1a1c22; border: 1px solid #1e2a3a; border-radius: 10px; color: white; font-size: 0.9rem; }
+    input:focus { outline: none; border-color: #00b4d8; }
+    button { width: 100%; background: #00b4d8; color: black; border: none; padding: 0.8rem; border-radius: 10px; font-size: 1rem; font-weight: 600; cursor: pointer; margin-top: 1rem; }
+    button:hover { background: #0096c7; }
+    .login-link { text-align: center; margin-top: 1rem; color: #5a6e85; font-size: 0.8rem; }
+    .login-link a { color: #00b4d8; text-decoration: none; }
+    .errorlist { color: #ef4444; font-size: 0.7rem; list-style: none; margin-bottom: 0.5rem; }
+  </style>
+</head>
+<body>
+  <div class="signup-container">
+    <h1>Create Account</h1>
+    <p class="subtitle">Sign up to report water faults and track your reports</p>
+    
+    <form method="POST">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit">Sign Up →</button>
+    </form>
+    
+    <div class="login-link">
+      Already have an account? <a href="/login/">Log in</a>
+    </div>
+  </div>
+</body>
+</html>

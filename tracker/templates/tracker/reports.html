@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>All Reports</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; background: #0a0e17; color: white; }
+        .report { background: #111827; padding: 15px; margin: 10px 0; border-radius: 5px; }
+        .btn { background: #00b4d8; color: black; padding: 10px 20px; text-decoration: none; display: inline-block; margin: 10px 0; }
+        .status-pending { color: #f97316; }
+        .status-in_progress { color: #00b4d8; }
+        .status-resolved { color: #22c55e; }
+    </style>
+</head>
+<body>
+    <h1>All Fault Reports</h1>
+    <a href="/" class="btn">Back to Home</a>
+    <a href="/report/" class="btn">Report New Fault</a>
+    
+    {% if reports %}
+        {% for report in reports %}
+        <div class="report">
+            <h3>📍 {{ report.location }}</h3>
+            <p><strong>Reported by:</strong> {{ report.name }}</p>
+            <p><strong>Gender:</strong> {{ report.get_gender_display }}</p>
+            <p><strong>Phone:</strong> {{ report.phone }}</p>
+            <p><strong>Fault Type:</strong> {{ report.fault_type }}</p>
+            <p><strong>Status:</strong> 
+                <span class="status-{{ report.status }}">
+                    {{ report.get_status_display }}
+                </span>
+            </p>
+            <p><strong>Description:</strong> {{ report.description }}</p>
+            <p><strong>Submitted:</strong> {{ report.submitted_at|date:"d M Y, H:i" }}</p>
+        </div>
+        {% endfor %}
+    {% else %}
+        <p>No reports yet. Be the first to report a fault!</p>
+    {% endif %}
+</body>
+</html>
