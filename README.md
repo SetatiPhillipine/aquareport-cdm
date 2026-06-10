@@ -77,8 +77,6 @@ Admin Dashboard	http://127.0.0.1:8000/admin-dashboard/
 Personas	http://127.0.0.1:8000/personas/
 Statistics	http://127.0.0.1:8000/stats/
 
-N.B!!  Screenshots
-[Add your screenshots here after taking them]
 
  Academic Context:
 Developed for NHCI63110 - Human-Computer Interaction at Sol Plaatje University
